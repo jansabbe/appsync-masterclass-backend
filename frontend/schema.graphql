@@ -1,0 +1,109 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  account: MyAccount!
+  accountById(id: ID!): OtherAccount!
+}
+
+type Mutation {
+  like(name: String!): Boolean
+}
+
+interface Account {
+  id: ID!
+  username: String!
+  acct: String!
+  displayName: String!
+  createdAt: AWSDateTime!
+  note: String!
+  avatar: AWSURL
+  header: AWSURL
+  followersConnection(first: Int, after: String): AccountFollowersConnection!
+  followingConnection(first: Int, after: String): AccountFollowingConnection!
+  statusesConnection(first: Int, after: String): AccountStatusesConnection!
+}
+
+type MyAccount implements Account {
+  id: ID!
+  username: String!
+  acct: String!
+  displayName: String!
+  createdAt: AWSDateTime!
+  note: String!
+  avatar: AWSURL
+  header: AWSURL
+  followersConnection(first: Int, after: String): AccountFollowersConnection!
+  followingConnection(first: Int, after: String): AccountFollowingConnection!
+  statusesConnection(first: Int, after: String): AccountStatusesConnection!
+}
+
+type OtherAccount implements Account {
+  id: ID!
+  username: String!
+  acct: String!
+  displayName: String!
+  createdAt: AWSDateTime!
+  note: String!
+  avatar: AWSURL
+  header: AWSURL
+  followersConnection(first: Int, after: String): AccountFollowersConnection!
+  followingConnection(first: Int, after: String): AccountFollowingConnection!
+  statusesConnection(first: Int, after: String): AccountStatusesConnection!
+
+  following: Boolean!
+  followedBy: Boolean!
+}
+
+type AccountFollowersConnection {
+  count: Int!
+}
+
+type AccountFollowingConnection {
+  count: Int!
+}
+
+type AccountStatusesConnection {
+  count: Int!
+}
+
+interface Status {
+  id: ID!
+  account: Account!
+  createdAt: AWSDateTime!
+}
+
+type PostedStatus implements Status {
+  id: ID!
+  account: Account!
+  createdAt: AWSDateTime!
+  content: String!
+  replies: Int!
+  favourites: Int!
+  reblogs: Int!
+  favourited: Boolean!
+  reblogged: Boolean!
+}
+
+type RepliedStatus implements Status {
+  id: ID!
+  account: Account!
+  createdAt: AWSDateTime!
+  inReplyToStatus: Status!
+  inReplyToUsers: [Account!]!
+  content: String!
+  replies: Int!
+  likes: Int!
+  retweets: Int!
+  favourited: Boolean!
+  reblogged: Boolean!
+}
+
+type RebloggedStatus implements Status {
+  id: ID!
+  account: Account!
+  createdAt: AWSDateTime!
+  reblog: Status!
+}

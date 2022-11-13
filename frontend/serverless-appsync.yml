@@ -1,0 +1,6 @@
+name: appsyncmasterclass
+schema: ./frontend/schema.graphql
+authenticationType: AMAZON_COGNITO_USER_POOLS
+userPoolConfig:
+  defaultAction: ALLOW
+  userPoolId: !Ref CognitoUserPool

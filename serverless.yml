@@ -1,0 +1,107 @@
+service: appsync-masterclass-backend
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: nodejs16.x
+  tags:
+    Environment: ${sls:stage}
+  environment:
+    STAGE: ${sls:stage}
+    COGNITO_USER_POOL_ID: !Ref CognitoUserPool
+    AWS_REGION: !Ref AWS::Region
+
+custom:
+  appSync:
+    - ${file(frontend/serverless-appsync.yml)}
+  esbuild:
+    bundle: true
+    minify: true
+
+functions:
+  confirmUserSignup:
+    handler: accounts/confirm-user-signup.handler
+    environment:
+      ACCOUNTS_TABLE: !Ref AccountsTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: !GetAtt AccountsTable.Arn
+
+resources:
+  Resources:
+    AccountsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+        Tags:
+          - Key: Stage
+            Value: ${sls:stage}
+          - Key: Domain
+            Value: accounts
+
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireSymbols: true
+            RequireUppercase: false
+        UsernameAttributes:
+          - email
+        UsernameConfiguration:
+          CaseSensitive: false
+        Schema:
+          - AttributeDataType: String
+            Name: name
+            Required: false
+            Mutable: true
+          - AttributeDataType: String
+            Name: preferred_username
+            Required: false
+            Mutable: true
+        LambdaConfig:
+          PostConfirmation: !GetAtt ConfirmUserSignupLambdaFunction.Arn
+        UserPoolTags:
+          Stage: ${sls:stage}
+          Domain: accounts
+    UserPoolInvokeFunction:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:invokeFunction
+        FunctionName: !Ref ConfirmUserSignupLambdaFunction
+        Principal: cognito-idp.amazonaws.com
+        SourceArn: !GetAtt CognitoUserPool.Arn
+    WebUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: !Ref CognitoUserPool
+        ClientName: web
+        ExplicitAuthFlows:
+          - ALLOW_USER_SRP_AUTH
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        PreventUserExistenceErrors: ENABLED
+
+  Outputs:
+    CognitoUserPoolId:
+      Value: !Ref CognitoUserPool
+
+plugins:
+  - serverless-better-credentials
+  - serverless-esbuild
+  - serverless-appsync-plugin
+  - serverless-iam-roles-per-function
+  - serverless-export-env
