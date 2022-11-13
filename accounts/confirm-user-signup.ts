@@ -9,7 +9,7 @@ export async function handler(event: PostConfirmationTriggerEvent) {
   if (event.triggerSource === "PostConfirmation_ConfirmSignUp") {
     const preferredUsername = event.request.userAttributes[
       "preferred_username"
-    ].replaceAll(/[^a-zA-Z0-9_]+/g, "_");
+    ].replaceAll(/[^a-zA-Z0-9_.]+/g, "_");
     const user = {
       pk: event.userName,
       username: preferredUsername,

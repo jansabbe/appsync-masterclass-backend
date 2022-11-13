@@ -9,8 +9,6 @@ provider:
     Environment: ${sls:stage}
   environment:
     STAGE: ${sls:stage}
-    COGNITO_USER_POOL_ID: !Ref CognitoUserPool
-    AWS_REGION: !Ref AWS::Region
 
 custom:
   appSync:
@@ -18,6 +16,10 @@ custom:
   esbuild:
     bundle: true
     minify: true
+  output:
+    file: common/test-utils/.stack-output.json
+  export-env:
+    overwrite: true
 
 functions:
   confirmUserSignup:
@@ -98,6 +100,8 @@ resources:
   Outputs:
     CognitoUserPoolId:
       Value: !Ref CognitoUserPool
+    AwsRegion:
+      Value: !Ref AWS::Region
 
 plugins:
   - serverless-better-credentials
@@ -105,3 +109,4 @@ plugins:
   - serverless-appsync-plugin
   - serverless-iam-roles-per-function
   - serverless-export-env
+  - serverless-stack-output

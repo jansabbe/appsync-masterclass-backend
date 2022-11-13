@@ -2367,6 +2367,7 @@ __metadata:
     serverless-esbuild: ^1.33.1
     serverless-export-env: ^2.2.0
     serverless-iam-roles-per-function: ^3.2.0
+    serverless-stack-output: ^0.2.3
     ts-node: ^10.9.1
     typescript: ^4.8.4
   languageName: unknown
@@ -8125,6 +8126,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"serverless-stack-output@npm:^0.2.3":
+  version: 0.2.3
+  resolution: "serverless-stack-output@npm:0.2.3"
+  dependencies:
+    tomlify-j0.4: ^2.0.0
+    yamljs: ^0.3.0
+  checksum: b3d48eb1d09261d28ee68298a54faccb7c0e675a474e9ac0231d5532075f7f24fa0dd791bd1b9766b644b5fd16b39044ada0dd428c4a2da5082676ed253659cd
+  languageName: node
+  linkType: hard
+
 "serverless@npm:^3.24.1":
   version: 3.24.1
   resolution: "serverless@npm:3.24.1"
@@ -8837,6 +8848,13 @@ __metadata:
     "@tokenizer/token": ^0.3.0
     ieee754: ^1.2.1
   checksum: cce256766b33e0f08ceffefa2198fb4961a417866d00780e58625999ab5c0699821407053e64eadc41b00bbb6c0d0c4d02fbd2199940d8a3ccb71e1b148ab9a2
+  languageName: node
+  linkType: hard
+
+"tomlify-j0.4@npm:^2.0.0":
+  version: 2.2.1
+  resolution: "tomlify-j0.4@npm:2.2.1"
+  checksum: 41e891b5f1fde45044bb3f01c61c45535c165675463b14b20d3a995377abfb843a79d87d9258a6f9a71d854c4740a6c41996ce89dd4ea311ce9ac2d7c56c2df9
   languageName: node
   linkType: hard
 
