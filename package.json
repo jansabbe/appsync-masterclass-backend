@@ -26,9 +26,8 @@
   },
   "scripts": {
     "sls": "sls",
-    "deploy": "sls deploy",
-    "remove": "sls remove",
-    "export-env": "sls export-env --all",
+    "deploy": "sls deploy && sls export-env --all",
+    "undeploy": "sls remove",
     "test": "tsc --noEmit && jest"
   },
   "dependencies": {
