@@ -1,3 +1,8 @@
+import {
+  CognitoIdentityProviderClient,
+  SignUpCommand,
+  AdminConfirmSignUpCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { faker } from "@faker-js/faker";
@@ -43,5 +48,40 @@ export const aPostConfirmSignUpEvent = (overrides: {
       },
     },
     response: {},
+  };
+};
+
+export const aNewUser = (overrides: { username?: string }) => {
+  const client = new CognitoIdentityProviderClient({
+    region: process.env.AWS_REGION,
+  });
+
+  const username = overrides.username ?? faker.internet.userName();
+  const email = `success+${username}@simulator.amazonses.com`;
+  const password = faker.internet.password(15, false, /\w/, "Prefix!_");
+
+  return {
+    async signsUp(): Promise<string> {
+      const resp = await client.send(
+        new SignUpCommand({
+          ClientId: process.env.COGNITO_CLIENT_ID,
+          Username: email,
+          Password: password,
+          UserAttributes: [{ Name: "preferred_username", Value: username }],
+        })
+      );
+      return (
+        resp.UserSub ?? fail(`Unable to signup user ${email}. No id found`)
+      );
+    },
+
+    async confirms(userId: string): Promise<void> {
+      await client.send(
+        new AdminConfirmSignUpCommand({
+          UserPoolId: process.env.COGNITO_USER_POOL_ID,
+          Username: userId,
+        })
+      );
+    },
   };
 };

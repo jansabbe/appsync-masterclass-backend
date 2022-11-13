@@ -6,6 +6,7 @@ dotenv.config();
 const envVariables = [
   "STAGE",
   "COGNITO_USER_POOL_ID",
+  "COGNITO_CLIENT_ID",
   "AWS_REGION",
   "ACCOUNTS_TABLE",
 ] as const;
@@ -21,10 +22,12 @@ beforeAll(async () => {
     path.join(__dirname, ".stack-output.json"),
     "utf-8"
   );
-  const stackOutput = JSON.parse(stackOutputAsString);
+  const { AwsRegion, CognitoUserPoolId, CognitoUserPoolClientId } =
+    JSON.parse(stackOutputAsString);
 
-  process.env.AWS_REGION = stackOutput.AwsRegion;
-  process.env.COGNITO_USER_POOL_ID = stackOutput.CognitoUserPoolId;
+  process.env.AWS_REGION = AwsRegion;
+  process.env.COGNITO_USER_POOL_ID = CognitoUserPoolId;
+  process.env.COGNITO_CLIENT_ID = CognitoUserPoolClientId;
 
   envVariables.forEach((env) => {
     if (process.env[env] === undefined) {
